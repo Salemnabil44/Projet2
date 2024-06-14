@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Demander les informations de connexion SSH
+echo "Entrez le nom d'utilisateur pour la connexion SSH : "
+read USER
+
+echo "Entrez l'adresse du serveur distant : "
+read HOST
+
+# Variables
+SSH_KEY="/chemin/vers/votre/cle/privée/id_rsa"  # Remplacez par le chemin correct de votre clé privée
+
+# Fonction pour se connecter via SSH et exécuter une commande
+ssh_execute() {
+    local COMMAND=$1
+    # Exécuter la commande via SSH avec sudo
+    ssh -i $SSH_KEY $USER@$HOST "sudo $COMMAND"
+    return $?
+}
+
+# Fonction pour vérifier la connexion SSH
+check_ssh_connection() {
+    ssh -i $SSH_KEY $USER@$HOST "echo 'Connexion établie'"
+    if [ $? -eq 0 ]; then
+        echo "Connexion SSH établie avec succès."
+    else
+        echo "Échec de la connexion SSH."
+        exit 1
+    fi
+}
+
+# Fonction pour ajouter un utilisateur (exemple)
+add_user() {
+    echo "Entrez le nom du nouvel utilisateur : "
+    read NEW_USER
+    ssh_execute "adduser \"$NEW_USER\""
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $NEW_USER ajouté avec succès."
+    else
+        echo "Échec de l'ajout de l'utilisateur $NEW_USER."
+    fi
+}
+
+# Fonction pour supprimer un utilisateur (exemple)
+delete_user() {
+    echo "Entrez le nom de l'utilisateur à supprimer : "
+    read USER_TO_DELETE
+    ssh_execute "deluser \"$USER_TO_DELETE\""
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $USER_TO_DELETE supprimé avec succès."
+    else
+        echo "Échec de la suppression de l'utilisateur $USER_TO_DELETE."
+    fi
+}
+
+# Fonction pour afficher la liste des utilisateurs (exemple)
+list_users() {
+    ssh_execute "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
+    if [ $? -eq 0 ]; then
+        echo "Liste des utilisateurs affichée avec succès."
+    else
+        echo "Échec de l'affichage de la liste des utilisateurs."
+    fi
+}
+
+# Fonction pour afficher le menu
+show_menu() {
+    echo "=== Menu ==="
+    echo "1) Ajouter un utilisateur"
+    echo "2) Supprimer un utilisateur"
+    echo "3) Afficher les utilisateurs"
+    echo "4) Quitter"
+}
+
+# Vérifier la connexion SSH avant d'afficher le menu
+check_ssh_connection
+
+# Script principal
+while true; do
+    show_menu
+    echo "Sélectionnez une option : "
+    read OPTION
+    case $OPTION in
+        1)
+            add_user
+            ;;
+        2)
+            delete_user
+            ;;
+        3)
+            list_users
+            ;;
+        4)
+            echo "Quitter..."
+            exit 0
+            ;;
+        *)
+            echo "Option invalide. Veuillez entrer 1, 2, 3 ou 4."
+            ;;
+    esac
+done
