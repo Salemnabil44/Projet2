@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Demander les informations de connexion SSH
+echo "Entrez le nom d'utilisateur pour la connexion SSH : "
+read USER
+
+echo "Entrez l'adresse du serveur distant : "
+read HOST
+
 # Variables
-HOST="serveur_exemple.com"
-USER="ton_nom_utilisateur"
-SSH_KEY="~/.ssh/id_rsa"  # Remplace par le chemin de ta clé SSH privée si nécessaire
+SSH_KEY="~/.ssh/id_rsa"  # Assure-toi que ta clé privée est correctement configurée
 
 # Fonction pour se connecter via SSH et exécuter une commande
 ssh_execute() {
@@ -12,7 +17,7 @@ ssh_execute() {
     return $?
 }
 
-# Fonction pour ajouter un utilisateur
+# Fonction pour ajouter un utilisateur (exemple)
 add_user() {
     echo "Entrez le nom du nouvel utilisateur : "
     read NEW_USER
@@ -24,7 +29,7 @@ add_user() {
     fi
 }
 
-# Fonction pour supprimer un utilisateur
+# Fonction pour supprimer un utilisateur (exemple)
 delete_user() {
     echo "Entrez le nom de l'utilisateur à supprimer : "
     read USER_TO_DELETE
@@ -36,7 +41,7 @@ delete_user() {
     fi
 }
 
-# Fonction pour afficher la liste des utilisateurs
+# Fonction pour afficher la liste des utilisateurs (exemple)
 list_users() {
     ssh_execute "getent passwd | cut -d: -f1"
     if [ $? -eq 0 ]; then
@@ -78,4 +83,3 @@ while true; do
             ;;
     esac
 done
-
