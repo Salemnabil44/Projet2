@@ -1,12 +1,9 @@
-Warning: Identity file /root/.ssh/id_rsa not accessible: No such file or directory.
-
-
-Sélectionnez une option : 
-1
 Entrez le nom du nouvel utilisateur : 
-Marie Paul
-Warning: Identity file /root/.ssh/id_rsa not accessible: No such file or directory.
+Pierre
+Warning: Identity file /chemin/vers/votre/cle/privée/id_rsa not accessible: No such file or directory.
 nabil@192.168.65.6's password: 
-sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
-sudo: il est nécessaire de saisir un mot de passe
-Échec de l'ajout de l'utilisateur Marie Paul.
+[sudo] Mot de passe de nabil : adduser : veuillez entrer un nom d'utilisateur identique à l'expression régulière configurée
+via la variable de configuration NAME_REGEX[_SYSTEM]. Utiliser l'option « --force-badname »
+pour assouplir cette vérification ou reconfigurer NAME_REGEX.
+Échec de l'ajout de l'utilisateur Pierre.
+
