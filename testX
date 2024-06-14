@@ -62,11 +62,11 @@ while true; do
             show_users
             ;;
         4)
-            echo "Option 4 : Au revoir!"
+            echo "Choix 4 : Au revoir!"
             break
             ;;
         *)
-            echo "Option invalide. Veuillez choisir une option valide."
+            echo "Choix invalide. Veuillez choisir une option valide."
             ;;
     esac
 done
