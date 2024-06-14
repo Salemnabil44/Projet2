@@ -18,7 +18,7 @@ delete_user() {
     read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
     echo ""
     echo "Suppression de l'utilisateur $user_to_delete..."
-    ssh $username@$hostname "echo '$password' | sudo -S deluser $user_to_delete"
+    sshpass -p "$password" ssh $username@$hostname "sudo deluser $user_to_delete"
 }
 
 # Fonction pour ajouter un utilisateur via SSH
@@ -27,7 +27,7 @@ add_user() {
     read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
     echo ""
     echo "Ajout de l'utilisateur $new_username..."
-    ssh $username@$hostname "echo '$password' | sudo -S adduser $new_username"
+    sshpass -p "$password" ssh $username@$hostname "sudo adduser $new_username"
 }
 
 # Fonction pour afficher le menu
