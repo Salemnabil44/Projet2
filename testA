@@ -24,7 +24,10 @@ delete_user() {
 # Fonction pour ajouter un utilisateur via SSH
 add_user() {
     read -p "Entrez le nom de l'utilisateur à ajouter : " new_username
-    ssh $username@$hostname "sudo adduser $new_username"
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Ajout de l'utilisateur $new_username..."
+    ssh $username@$hostname "echo '$password' | sudo -S adduser $new_username"
 }
 
 # Fonction pour afficher le menu
@@ -71,11 +74,11 @@ while true; do
             show_users
             ;;
         4)
-            echo "Choix 4 : Au revoir !"
+            echo "Option 4 : Quitter le script. Au revoir!"
             break
             ;;
         *)
-            echo "Choix invalide. Veuillez choisir une option valide."
+            echo "Option invalide. Veuillez choisir une option valide."
             ;;
     esac
 done
