@@ -14,13 +14,14 @@ REMOTE_USER="nabil"  # Remplacez par l'utilisateur sur le serveur distant qui pe
 # Fonction pour se connecter via SSH et exécuter une commande
 ssh_execute() {
     local COMMAND=$1
-    ssh -i $SSH_KEY $USER@$HOST "$COMMAND"
+    # Supprimer les avertissements sur la clé SSH non accessible et le mot de passe
+    ssh -i $SSH_KEY $USER@$HOST "$COMMAND" 2>/dev/null
     return $?
 }
 
 # Fonction pour vérifier la connexion SSH
 check_ssh_connection() {
-    ssh -i $SSH_KEY $USER@$HOST "echo 'Connexion établie'"
+    ssh -i $SSH_KEY $USER@$HOST "echo 'Connexion établie'" 2>/dev/null
     if [ $? -eq 0 ]; then
         echo "Connexion SSH établie avec succès."
     else
