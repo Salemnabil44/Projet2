@@ -10,16 +10,22 @@ read HOST
 # Variables
 SSH_KEY="/chemin/vers/votre/cle/privée/id_rsa"  # Remplacez par le chemin correct de votre clé privée
 
+# Vérifier si la clé SSH existe
+if [ ! -f "$SSH_KEY" ]; then
+    echo "Erreur : Clé SSH $SSH_KEY non trouvée."
+    exit 1
+fi
+
 # Fonction pour se connecter via SSH et exécuter une commande
 ssh_execute() {
     local COMMAND=$1
-    ssh -i $SSH_KEY $USER@$HOST "$COMMAND"
+    ssh -i "$SSH_KEY" $USER@$HOST "$COMMAND"
     return $?
 }
 
 # Fonction pour vérifier la connexion SSH
 check_ssh_connection() {
-    ssh -i $SSH_KEY $USER@$HOST "echo 'Connexion établie'"
+    ssh -i "$SSH_KEY" $USER@$HOST "echo 'Connexion établie'"
     if [ $? -eq 0 ]; then
         echo "Connexion SSH établie avec succès."
     else
@@ -32,7 +38,7 @@ check_ssh_connection() {
 add_user() {
     echo "Entrez le nom du nouvel utilisateur : "
     read NEW_USER
-    ssh_execute "sudo adduser \"$NEW_USER\""
+    ssh_execute "echo '$USER_PASSWORD' | sudo -S adduser \"$NEW_USER\""
     if [ $? -eq 0 ]; then
         echo "Utilisateur $NEW_USER ajouté avec succès."
     else
@@ -44,7 +50,7 @@ add_user() {
 delete_user() {
     echo "Entrez le nom de l'utilisateur à supprimer : "
     read USER_TO_DELETE
-    ssh_execute "sudo deluser \"$USER_TO_DELETE\""
+    ssh_execute "echo '$USER_PASSWORD' | sudo -S deluser \"$USER_TO_DELETE\""
     if [ $? -eq 0 ]; then
         echo "Utilisateur $USER_TO_DELETE supprimé avec succès."
     else
@@ -70,6 +76,10 @@ show_menu() {
     echo "3) Afficher les utilisateurs"
     echo "4) Quitter"
 }
+
+# Demander le mot de passe de l'utilisateur pour sudo
+echo "Entrez le mot de passe sudo pour l'utilisateur $USER : "
+read -s USER_PASSWORD
 
 # Vérifier la connexion SSH avant d'afficher le menu
 check_ssh_connection
