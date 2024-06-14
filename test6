@@ -54,7 +54,7 @@ delete_user() {
 
 # Fonction pour afficher la liste des utilisateurs (exemple)
 list_users() {
-    ssh_execute "awk -F: '\$3 >= 1000 {print \$1}' /etc/passwd"
+    ssh_execute "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
     if [ $? -eq 0 ]; then
         echo "Liste des utilisateurs affichée avec succès."
     else
