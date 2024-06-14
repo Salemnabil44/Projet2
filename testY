@@ -56,7 +56,7 @@ while true; do
             show_users
             ;;
         4)
-            echo "Option 4 : Quitter le script. Au revoir!"
+            echo "Option 4 : Au revoir!"
             break
             ;;
         *)
