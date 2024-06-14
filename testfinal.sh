@@ -1,91 +1,81 @@
 #!/bin/bash
 
-# Vérifier si le script est exécuté en tant que root
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Ce script doit être exécuté en tant que root"
-  exit 1
-fi
+# Variables
+HOST="serveur_exemple.com"
+USER="ton_nom_utilisateur"
+SSH_KEY="~/.ssh/id_rsa"  # Remplace par le chemin de ta clé SSH privée si nécessaire
 
-# Fonction pour la connexion SSH
-connexion_ssh() {
-  read -p "Entrez le nom d'utilisateur pour la connexion SSH: " username
-  read -p "Entrez l'adresse IP ou le nom d'hôte: " hostname
-  ssh "$username"@"$hostname"
+# Fonction pour se connecter via SSH et exécuter une commande
+ssh_execute() {
+    local COMMAND=$1
+    ssh -i $SSH_KEY $USER@$HOST "$COMMAND"
+    return $?
 }
 
+# Fonction pour ajouter un utilisateur
+add_user() {
+    echo "Entrez le nom du nouvel utilisateur : "
+    read NEW_USER
+    ssh_execute "sudo adduser $NEW_USER"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $NEW_USER ajouté avec succès."
+    else
+        echo "Échec de l'ajout de l'utilisateur $NEW_USER."
+    fi
+}
+
+# Fonction pour supprimer un utilisateur
+delete_user() {
+    echo "Entrez le nom de l'utilisateur à supprimer : "
+    read USER_TO_DELETE
+    ssh_execute "sudo deluser $USER_TO_DELETE"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $USER_TO_DELETE supprimé avec succès."
+    else
+        echo "Échec de la suppression de l'utilisateur $USER_TO_DELETE."
+    fi
+}
+
+# Fonction pour afficher la liste des utilisateurs
+list_users() {
+    ssh_execute "getent passwd | cut -d: -f1"
+    if [ $? -eq 0 ]; then
+        echo "Liste des utilisateurs affichée avec succès."
+    else
+        echo "Échec de l'affichage de la liste des utilisateurs."
+    fi
+}
+
+# Fonction pour afficher le menu
+show_menu() {
+    echo "1) Ajouter un utilisateur"
+    echo "2) Supprimer un utilisateur"
+    echo "3) Afficher les utilisateurs"
+    echo "4) Quitter"
+}
+
+# Script principal
 while true; do
-  # Afficher le menu
-  echo "======================"
-  echo "   Menu Utilisateur   "
-  echo "======================"
-  echo "1. Ajouter un utilisateur"
-  echo "2. Supprimer un utilisateur"
-  echo "3. Afficher les utilisateurs"
-  echo "4. Connexion SSH"
-  echo "5. Quitter"
-  echo -n "Choisissez une option [1-5]: "
-  read choix
-
-  case $choix in
-    1)
-      # Ajouter un utilisateur
-      echo -n "Entrez le nom d'utilisateur à ajouter: "
-      read username
-      if id "$username" &>/dev/null; then
-        echo "L'utilisateur '$username' existe déjà."
-      else
-        useradd -m "$username"
-        if [ $? -eq 0 ]; then
-          echo "L'utilisateur '$username' a été ajouté."
-          echo -n "Entrez le mot de passe pour $username: "
-          read -s password
-          echo
-          # Utiliser chpasswd pour définir le mot de passe
-          echo "$username:$password" | chpasswd
-          if [ $? -eq 0 ]; then
-            echo "Le mot de passe a été défini avec succès pour l'utilisateur '$username'."
-          else
-            echo "Échec de la définition du mot de passe pour l'utilisateur '$username'."
-          fi
-        else
-          echo "Échec de l'ajout de l'utilisateur '$username'."
-        fi
-      fi
-      ;;
-    2)
-      # Supprimer un utilisateur
-      echo -n "Entrez le nom d'utilisateur à supprimer: "
-      read username
-      if id "$username" &>/dev/null; then
-        userdel -r "$username" 2>/dev/null
-        if [ $? -eq 0 ]; then
-          echo "L'utilisateur '$username' a été supprimé."
-        else
-          echo "Échec de la suppression de l'utilisateur '$username'."
-        fi
-      else
-        echo "L'utilisateur '$username' n'existe pas."
-      fi
-      ;;
-    3)
-      # Afficher les utilisateurs
-      echo "Liste des utilisateurs sur le système (après les 55 premières lignes) :"
-      tail -n +56 /etc/passwd | cut -d: -f1
-      ;;
-    4)
-      # Connexion SSH
-      connexion_ssh
-      ;;
-    5)
-      # Quitter le script
-      echo "Quitter."
-      exit 0
-      ;;
-    *)
-      # Option invalide
-      echo "Option invalide. Veuillez choisir une option entre 1 et 5."
-      ;;
-  esac
-
-  echo ""
+    show_menu
+    echo "Sélectionnez une option : "
+    read OPTION
+    case $OPTION in
+        1)
+            add_user
+            ;;
+        2)
+            delete_user
+            ;;
+        3)
+            list_users
+            ;;
+        4)
+            echo "Quitter..."
+            exit 0
+            ;;
+        *)
+            echo "Option invalide. Veuillez entrer 1, 2, 3 ou 4."
+            ;;
+    esac
 done
+
