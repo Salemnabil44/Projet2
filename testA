@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Fonction pour se connecter en SSH
+connect_ssh() {
+    echo "Connexion SSH en cours..."
+    ssh $username@$hostname "echo Connexion SSH établie sur \`hostname\`"
+    return $?
+}
+
+# Commande pour afficher les utilisateurs via SSH
+show_users() {
+    ssh $username@$hostname "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
+}
+
+# Fonction pour ajouter un utilisateur via SSH
+add_user() {
+    read -p "Entrez le nom de l'utilisateur à ajouter : " user_to_add
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Ajout de l'utilisateur $user_to_add..."
+    ssh $username@$hostname "echo '$password' | sudo -S useradd $user_to_add"
+}
+
+# Fonction pour supprimer un utilisateur via SSH
+delete_user() {
+    read -p "Entrez le nom de l'utilisateur à supprimer : " user_to_delete
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Suppression de l'utilisateur $user_to_delete..."
+    ssh $username@$hostname "echo '$password' | sudo -S deluser $user_to_delete"
+}
+
+# Fonction pour afficher le menu
+show_menu() {
+    echo ""
+    echo "Menu :"
+    echo "1. Ajouter un utilisateur"
+    echo "2. Supprimer un utilisateur"
+    echo "3. Afficher les utilisateurs"
+    echo "4. Quitter"
+}
+
+# Demander les identifiants SSH
+echo "Entrez les informations de connexion SSH :"
+read -p "Nom d'utilisateur : " username
+read -p "Adresse IP ou nom de domaine : " hostname
+
+# Boucle pour la connexion SSH
+while ! connect_ssh; do
+    echo "Échec de la connexion SSH. Veuillez réessayer."
+    read -p "Nom d'utilisateur : " username
+    read -p "Adresse IP ou nom de domaine : " hostname
+done
+
+echo "Connexion établie avec succès!"
+
+# Afficher le menu principal
+while true; do
+    show_menu
+
+    read -p "Choisissez une option (1/2/3/4) : " choice
+    case $choice in
+        1)
+            echo "Option 1 : Ajouter un utilisateur"
+            add_user
+            ;;
+        2)
+            echo "Option 2 : Supprimer un utilisateur"
+            delete_user
+            ;;
+        3)
+            echo "Option 3 : Afficher les utilisateurs"
+            echo "Liste des utilisateurs sur $hostname :"
+            show_users
+            ;;
+        4)
+            echo "Choix 4 : Au revoir!"
+            break
+            ;;
+        *)
+            echo "Choix invalide. Veuillez choisir une option valide."
+            ;;
+    esac
+done
