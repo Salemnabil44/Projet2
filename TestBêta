@@ -1,0 +1,172 @@
+#!/bin/bash
+
+# Fonction pour se connecter en SSH
+connect_ssh() {
+    echo "Connexion SSH en cours..."
+    ssh $username@$hostname "echo Connexion SSH établie sur \`hostname\`"
+    return $?
+}
+
+# Commande pour afficher les utilisateurs via SSH
+show_users() {
+    ssh $username@$hostname "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
+}
+
+# Fonction pour ajouter un utilisateur via SSH
+add_user() {
+    read -p "Entrez le nom de l'utilisateur à ajouter : " user_to_add
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Ajout de l'utilisateur $user_to_add..."
+    ssh $username@$hostname "echo '$password' | sudo -S useradd $user_to_add"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $user_to_add créé avec succès."
+    else
+        echo "Échec de la création de l'utilisateur $user_to_add."
+    fi
+}
+
+# Fonction pour supprimer un utilisateur via SSH
+delete_user() {
+    read -p "Entrez le nom de l'utilisateur à supprimer : " user_to_delete
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Suppression de l'utilisateur $user_to_delete..."
+    ssh $username@$hostname "echo '$password' | sudo -S deluser $user_to_delete"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $user_to_delete supprimé avec succès."
+    else
+        echo "Échec de la suppression de l'utilisateur $user_to_delete."
+    fi
+}
+
+# Fonction pour éteindre le serveur via SSH
+shutdown_server() {
+    read -p "Êtes-vous sûr de vouloir éteindre le serveur ? (oui/non) : " confirmation
+    if [ "$confirmation" = "oui" ]; then
+        read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+        echo ""
+        echo "Extinction du serveur..."
+        ssh $username@$hostname "echo '$password' | sudo -S shutdown now"
+
+        # Vérifier le statut de sortie de la commande SSH
+        ssh_exit_status=$?
+        if [ $ssh_exit_status -eq 0 ]; then
+            echo "Serveur éteint."
+        else
+            echo "Échec de l'arrêt du serveur."
+        fi
+    else
+        echo "Opération annulée."
+    fi
+}
+
+# Fonction pour redémarrer le serveur via SSH
+reboot_server() {
+    read -p "Êtes-vous sûr de vouloir redémarrer le serveur ? (oui/non) : " confirmation
+    if [ "$confirmation" = "oui" ]; then
+        read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+        echo ""
+        echo "Redémarrage du serveur..."
+        ssh $username@$hostname "echo '$password' | sudo -S reboot"
+        ssh_exit_status=$?
+        
+        if [ $ssh_exit_status -eq 0 ]; then
+            echo "Le serveur est en cours de redémarrage."
+        else
+            echo "Commande de redémarrage envoyée. La connexion SSH a été interrompue, le serveur est en cours de redémarrage."
+        fi
+    else
+        echo "Opération annulée."
+    fi
+}
+
+# Fonction pour recueillir des informations système via SSH
+collect_info() {
+    local timestamp=$(date +%Y%m%d)
+    local target_name=$(ssh $username@$hostname "hostname")
+    local info_file="info_${target_name}_${timestamp}.txt"
+    local user_dir=$(eval echo ~$USER)
+    local target_dir="${user_dir}/Documents"
+    
+    mkdir -p "$target_dir"
+    
+    ssh $username@$hostname "echo 'Architecture du processeur:' > /tmp/$info_file"
+    ssh $username@$hostname "uname -m >> /tmp/$info_file"
+    ssh $username@$hostname "echo 'Mémoire vive:' >> /tmp/$info_file"
+    ssh $username@$hostname "free -h >> /tmp/$info_file"
+    ssh $username@$hostname "echo 'Espace disque:' >> /tmp/$info_file"
+    ssh $username@$hostname "df -h >> /tmp/$info_file"
+    scp $username@$hostname:/tmp/$info_file "$target_dir/$info_file"
+    ssh $username@$hostname "rm /tmp/$info_file"
+
+    echo "Informations système enregistrées dans $target_dir/$info_file"
+}
+
+# Fonction pour afficher le menu
+show_menu() {
+    echo ""
+    echo "Menu :"
+    echo "1. Ajouter un utilisateur"
+    echo "2. Supprimer un utilisateur"
+    echo "3. Afficher les utilisateurs"
+    echo "4. Éteindre le serveur"
+    echo "5. Redémarrer le serveur"
+    echo "6. Recueillir des informations système"
+    echo "7. Quitter"
+}
+
+# Demander les identifiants SSH
+echo "Entrez les informations de connexion SSH :"
+read -p "Nom d'utilisateur : " username
+read -p "Adresse IP ou nom de domaine : " hostname
+
+# Boucle pour la connexion SSH
+while ! connect_ssh; do
+    echo "Échec de la connexion SSH. Veuillez réessayer."
+    read -p "Nom d'utilisateur : " username
+    read -p "Adresse IP ou nom de domaine : " hostname
+done
+
+echo "Connexion établie avec succès!"
+
+# Afficher le menu principal
+while true; do
+    show_menu
+
+    read -p "Choisissez une option (1/2/3/4/5/6/7) : " choice
+    case $choice in
+        1)
+            echo "Option 1 : Ajouter un utilisateur"
+            add_user
+            ;;
+        2)
+            echo "Option 2 : Supprimer un utilisateur"
+            delete_user
+            ;;
+        3)
+            echo "Option 3 : Afficher les utilisateurs"
+            echo "Liste des utilisateurs sur $hostname :"
+            show_users
+            ;;
+        4)
+            echo "Option 4 : Éteindre le serveur"
+            shutdown_server
+            ;;
+        5)
+            echo "Option 5 : Redémarrer le serveur"
+            reboot_server
+            ;;
+        6)
+            echo "Option 6 : Recueillir des informations système"
+            collect_info
+            ;;
+        7)
+            echo "Option 7 : Au revoir!"
+            break
+            ;;
+        *)
+            echo "Choix invalide. Veuillez choisir une option valide."
+            ;;
+    esac
+done
