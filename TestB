@@ -42,7 +42,7 @@ delete_user() {
 
 # Fonction pour éteindre le serveur via SSH
 shutdown_server() {
-    read -p "Êtes-vous sûr de vouloir éteindre le serveur ? (oui/non) : " confirmation
+    read -p "Êtes-vous sûr de vouloir éteindre le serveur ? Une fois le serveur éteint, il ne sera plus possible de le rallumer à distance. (oui/non) : " confirmation
     if [ "$confirmation" = "oui" ]; then
         read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
         echo ""
