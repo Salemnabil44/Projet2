@@ -12,6 +12,15 @@ show_users() {
     ssh $username@$hostname "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
 }
 
+# Fonction pour ajouter un utilisateur via SSH
+add_user() {
+    read -p "Entrez le nom de l'utilisateur à ajouter : " user_to_add
+    read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
+    echo ""
+    echo "Ajout de l'utilisateur $user_to_add..."
+    ssh $username@$hostname "echo '$password' | sudo -S useradd $user_to_add"
+}
+
 # Fonction pour supprimer un utilisateur via SSH
 delete_user() {
     read -p "Entrez le nom de l'utilisateur à supprimer : " user_to_delete
@@ -21,30 +30,15 @@ delete_user() {
     ssh $username@$hostname "echo '$password' | sudo -S deluser $user_to_delete"
 }
 
-# Fonction pour afficher les informations système
-display_system_info() {
-    echo "Recueil des informations système..."
-    sys_info=$(ssh $username@$hostname "echo 'Nom d'utilisateur: $username'; echo 'Architecture processeur: \$(uname -m)'; echo 'Taille du disque dur: \$(df -h / | awk 'NR==2{print \$2}')'; echo 'Espace utilisé: \$(df -h / | awk 'NR==2{print \$3}')'; echo 'Mémoire vive: \$(free -h | awk '/Mem:/{print \$2}')'; echo 'Adresse IP: \$(hostname -I | awk '{print \$1}')'")
-
-    echo "$sys_info"
-
-    read -p "Enregistrer les informations dans Documents (1) ou sur le Bureau (2) ? " save_choice
-    if [[ $save_choice -eq 1 ]]; then
-        save_dir="$HOME/Documents"
-    elif [[ $save_choice -eq 2 ]]; then
-        save_dir="$HOME/Desktop"
-    else
-        echo "Choix invalide. Les informations ne seront pas enregistrées."
-        return
-    fi
-
-    target_name=$(ssh $username@$hostname "hostname")
-    date_str=$(date +%Y%m%d)
-    file_name="info_${target_name}_${date_str}.txt"
-    file_path="$save_dir/$file_name"
-
-    echo "$sys_info" > "$file_path"
-    echo "Informations enregistrées dans $file_path"
+# Fonction pour afficher les informations de l'utilisateur cible via SSH
+display_user_info() {
+    echo "Affichage des informations de l'utilisateur cible sur $hostname :"
+    ssh $username@$hostname "
+    echo 'Nom de l'utilisateur : $(whoami)'
+    echo 'Adresse IP : $(hostname -I | awk '{print \$1}')'
+    echo 'Disque Dur : $(df -h / | awk 'NR==2 {print \$2, \"total,\", \$3, \"utilisé,\", \$4, \"libre\"}')'
+    echo 'Mémoire Vive : $(free -h | awk 'NR==2 {print \$2, \"total,\", \$3, \"utilisé,\", \$4, \"libre\"}')'
+    "
 }
 
 # Fonction pour afficher le menu
@@ -54,7 +48,7 @@ show_menu() {
     echo "1. Ajouter un utilisateur"
     echo "2. Supprimer un utilisateur"
     echo "3. Afficher les utilisateurs"
-    echo "4. Afficher les informations système"
+    echo "4. Afficher les informations de l'utilisateur cible"
     echo "5. Quitter"
 }
 
@@ -80,7 +74,7 @@ while true; do
     case $choice in
         1)
             echo "Option 1 : Ajouter un utilisateur"
-            # Ajouter ici le code pour ajouter un utilisateur
+            add_user
             ;;
         2)
             echo "Option 2 : Supprimer un utilisateur"
@@ -92,8 +86,8 @@ while true; do
             show_users
             ;;
         4)
-            echo "Option 4 : Afficher les informations système"
-            display_system_info
+            echo "Option 4 : Afficher les informations de l'utilisateur cible"
+            display_user_info
             ;;
         5)
             echo "Choix 5 : Au revoir!"
