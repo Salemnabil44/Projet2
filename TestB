@@ -23,7 +23,7 @@ shutdown_server() {
         
         # Vérifier si la connexion SSH est rompue
         ssh_exit_status=$?
-        if [ $ssh_exit_status -eq 0 ]; then
+        if [ $ssh_exit_status -ne 0 ]; then
             echo "Le serveur est en cours d'extinction."
             exit 0
         else
