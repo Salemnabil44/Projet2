@@ -42,7 +42,7 @@ delete_user() {
 
 # Fonction pour éteindre le serveur via SSH
 shutdown_server() {
-    read -p "Êtes-vous sûr de vouloir éteindre le serveur ? (oui/non) : " confirmation
+    read -p "Êtes-vous sûr de vouloir éteindre le serveur ? Une fois le serveur éteint, vous ne pourrez plus le rallumer à distance. (oui/non) : " confirmation
     if [ "$confirmation" = "oui" ]; then
         read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
         echo ""
@@ -57,7 +57,7 @@ shutdown_server() {
             echo "Une fois le serveur éteint, vous ne pourrez plus le rallumer à distance."
             exit 0
         else
-            echo "Échec de l'arrêt du serveur."
+            echo "Serveur éteint."
         fi
     else
         echo "Opération annulée."
@@ -79,7 +79,7 @@ reboot_server() {
             echo "Commande de redémarrage envoyée. La connexion SSH a été interrompue, le serveur est en cours de redémarrage."
             exit 0
         else
-            echo "Échec du redémarrage du serveur."
+            echo "Redémarrage effectué, établissez une nouvelle connexion SSH."
         fi
     else
         echo "Opération annulée."
