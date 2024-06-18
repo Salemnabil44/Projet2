@@ -17,7 +17,7 @@ get_processor_architecture() {
 
 # Récupérer les informations sur le disque dur
 get_disk_info() {
-    df -h --output=source,target,fstype,size,used,avail,pcent | awk 'NR==1{next} {print "Device: "$1"\nMountpoint: "$2"\nFile system type: "$3"\nTotal Size: "$4"\nUsed: "$5"\nFree: "$6"\nPercentage Used: "$7"\n"}'
+    df -h --output=source,target,fstype,size,used,avail,pcent | awk 'NR==1{next} {print "Device: "$1"\nMountpoint: "$2"\nFile system type: "$3"\nTotal Size: "$4"\nUsed: "$5"\nAvailable: "$6"\nPercentage Used: "$7"\n"}'
 }
 
 # Afficher les informations
