@@ -43,12 +43,12 @@ delete_user() {
 # Fonction pour éteindre le serveur via SSH
 shutdown_server() {
     read -p "Êtes-vous sûr de vouloir éteindre le serveur ? (oui/non) : " confirmation
-    if [ "$confirmation" = "oui" ];then
+    if [ "$confirmation" = "oui" ]; then
         read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
         echo ""
         echo "Extinction du serveur..."
-        ssh $username@$hostname "echo '$password' | sudo -S shutdown now && echo 'Shutdown command executed successfully.'"
-        if [ $? -eq 0 ]; then
+        ssh $username@$hostname "echo '$password' | sudo -S shutdown now"
+        if [ $? -eq 0 ] || [ $? -eq 255 ]; then
             echo "Le serveur est en cours d'arrêt."
             echo "Une fois le serveur éteint, vous ne pourrez plus le rallumer à distance."
             exit 0
@@ -67,8 +67,8 @@ reboot_server() {
         read -s -p "Entrez le mot de passe sudo pour $username@$hostname : " password
         echo ""
         echo "Redémarrage du serveur..."
-        ssh $username@$hostname "echo '$password' | sudo -S reboot && echo 'Reboot command executed successfully.'"
-        if [ $? -eq 0 ]; then
+        ssh $username@$hostname "echo '$password' | sudo -S reboot"
+        if [ $? -eq 0 ] || [ $? -eq 255 ]; then
             echo "Le serveur est en cours de redémarrage."
             exit 0
         else
@@ -107,37 +107,4 @@ echo "Connexion établie avec succès!"
 
 # Afficher le menu principal
 while true; do
-    show_menu
-
-    read -p "Choisissez une option (1/2/3/4/5/6) : " choice
-    case $choice in
-        1)
-            echo "Option 1 : Ajouter un utilisateur"
-            add_user
-            ;;
-        2)
-            echo "Option 2 : Supprimer un utilisateur"
-            delete_user
-            ;;
-        3)
-            echo "Option 3 : Afficher les utilisateurs"
-            echo "Liste des utilisateurs sur $hostname :"
-            show_users
-            ;;
-        4)
-            echo "Option 4 : Éteindre"
-            shutdown_server
-            ;;
-        5)
-            echo "Option 5 : Redémarrer"
-            reboot_server
-            ;;
-        6)
-            echo "Option 6 : Quitter"
-            break
-            ;;
-        *)
-            echo "Choix invalide. Veuillez choisir une option valide."
-            ;;
-    esac
-done
+    show
