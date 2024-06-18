@@ -20,9 +20,11 @@ shutdown_server() {
         echo ""
         echo "Extinction du serveur..."
         ssh $username@$hostname "echo '$password' | sudo -S shutdown now"
-        if [ $? -eq 0 ]; then
-            echo "Le serveur est en cours d'arrêt."
-            echo "Une fois le serveur éteint, vous ne pourrez plus le rallumer à distance."
+        
+        # Vérifier si la connexion SSH est rompue
+        ssh_exit_status=$?
+        if [ $ssh_exit_status -eq 0 ]; then
+            echo "Le serveur est en cours d'extinction."
             exit 0
         else
             echo "Échec de l'arrêt du serveur."
