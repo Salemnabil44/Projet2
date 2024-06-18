@@ -19,6 +19,11 @@ add_user() {
     echo ""
     echo "Ajout de l'utilisateur $user_to_add..."
     ssh $username@$hostname "echo '$password' | sudo -S useradd $user_to_add"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $user_to_add créé avec succès."
+    else
+        echo "Échec de la création de l'utilisateur $user_to_add."
+    fi
 }
 
 # Fonction pour supprimer un utilisateur via SSH
@@ -28,27 +33,45 @@ delete_user() {
     echo ""
     echo "Suppression de l'utilisateur $user_to_delete..."
     ssh $username@$hostname "echo '$password' | sudo -S deluser $user_to_delete"
+    if [ $? -eq 0 ]; then
+        echo "Utilisateur $user_to_delete supprimé avec succès."
+    else
+        echo "Échec de la suppression de l'utilisateur $user_to_delete."
+    fi
 }
 
 # Fonction pour éteindre le serveur via SSH
 shutdown_server() {
-    echo "Extinction du serveur en cours..."
-    ssh $username@$hostname "sudo shutdown now"
+    echo "Demande d'extinction du serveur en cours..."
+    ssh $username@$hostname "echo '$password' | sudo -S shutdown -h now"
+    if [ $? -eq 0 ]; then
+        echo "Le serveur a été arrêté avec succès."
+    else
+        echo "Échec de l'arrêt du serveur."
+    fi
 }
 
 # Fonction pour redémarrer le serveur via SSH
 restart_server() {
-    echo "Redémarrage du serveur en cours..."
-    ssh $username@$hostname "sudo reboot"
+    echo "Demande de redémarrage du serveur en cours..."
+    ssh $username@$hostname "echo '$password' | sudo -S shutdown -r now"
+    if [ $? -eq 0 ]; then
+        echo "Le serveur a été redémarré avec succès."
+    else
+        echo "Échec du redémarrage du serveur."
+    fi
 }
 
 # Fonction pour afficher le menu
 show_menu() {
     echo ""
     echo "Menu :"
-    echo "1. Éteindre le serveur"
-    echo "2. Redémarrer le serveur"
-    echo "3. Quitter"
+    echo "1. Ajouter un utilisateur"
+    echo "2. Supprimer un utilisateur"
+    echo "3. Afficher les utilisateurs"
+    echo "4. Éteindre le serveur"
+    echo "5. Redémarrer le serveur"
+    echo "6. Quitter"
 }
 
 # Demander les identifiants SSH
@@ -69,18 +92,31 @@ echo "Connexion établie avec succès!"
 while true; do
     show_menu
 
-    read -p "Choisissez une option (1/2/3) : " choice
+    read -p "Choisissez une option (1/2/3/4/5/6) : " choice
     case $choice in
         1)
-            echo "Option 1 : Éteindre le serveur"
-            shutdown_server
+            echo "Option 1 : Ajouter un utilisateur"
+            add_user
             ;;
         2)
-            echo "Option 2 : Redémarrer le serveur"
-            restart_server
+            echo "Option 2 : Supprimer un utilisateur"
+            delete_user
             ;;
         3)
-            echo "Option 3 : Au revoir!"
+            echo "Option 3 : Afficher les utilisateurs"
+            echo "Liste des utilisateurs sur $hostname :"
+            show_users
+            ;;
+        4)
+            echo "Option 4 : Éteindre le serveur"
+            shutdown_server
+            ;;
+        5)
+            echo "Option 5 : Redémarrer le serveur"
+            restart_server
+            ;;
+        6)
+            echo "Choix 6 : Au revoir!"
             break
             ;;
         *)
