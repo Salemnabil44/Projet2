@@ -1,103 +1,43 @@
 #!/bin/bash
 
-# Fonction pour se connecter en SSH
-connect_ssh() {
-    echo "Connexion SSH en cours..."
-    ssh -o StrictHostKeyChecking=no $username@$hostname "echo Connexion SSH établie sur \`hostname\`"
-    return $?
+# Fonction pour établir la connexion SSH
+establish_ssh_connection() {
+    echo "Etablissement de la connexion SSH..."
+    # Remplacez 'utilisateur' et 'serveur' par vos propres informations
+    ssh utilisateur@serveur
+    echo "Connexion SSH établie."
 }
 
-# Commande pour afficher les utilisateurs via SSH
-show_users() {
-    ssh $username@$hostname "awk -F: '\$3 >= 1000 && \$1 != \"nobody\" {print \$1}' /etc/passwd"
+# Fonction pour éteindre à distance le serveur
+remote_shutdown() {
+    echo "Commande pour éteindre à distance le serveur..."
+    # Commande pour éteindre le serveur à distance
+    ssh utilisateur@serveur "sudo shutdown now"
+    echo "Le serveur a été éteint."
 }
 
-# Fonction pour ajouter un utilisateur via SSH
-add_user() {
-    read -p "Entrez le nom de l'utilisateur à ajouter : " user_to_add
-    ssh $username@$hostname "sudo useradd $user_to_add"
+# Fonction pour redémarrer le serveur à distance
+remote_restart() {
+    echo "Commande pour redémarrer à distance le serveur..."
+    # Commande pour redémarrer le serveur à distance
+    ssh utilisateur@serveur "sudo reboot"
+    echo "Le serveur a été redémarré."
 }
 
-# Fonction pour supprimer un utilisateur via SSH
-delete_user() {
-    read -p "Entrez le nom de l'utilisateur à supprimer : " user_to_delete
-    ssh $username@$hostname "sudo deluser $user_to_delete"
-}
-
-# Fonction pour éteindre le serveur via SSH
-shutdown_server() {
-    echo "Extinction du serveur en cours..."
-    ssh $username@$hostname "sudo shutdown now"
-}
-
-# Fonction pour redémarrer le serveur via SSH
-restart_server() {
-    echo "Redémarrage du serveur en cours..."
-    ssh $username@$hostname "sudo reboot"
-}
-
-# Fonction pour afficher le menu
-show_menu() {
-    echo ""
-    echo "Menu :"
-    echo "1. Éteindre le serveur"
-    echo "2. Redémarrer le serveur"
-    echo "3. Ajouter un utilisateur"
-    echo "4. Supprimer un utilisateur"
-    echo "5. Afficher les utilisateurs"
-    echo "6. Quitter"
-}
-
-# Demander les identifiants SSH
-echo "Entrez les informations de connexion SSH :"
-read -p "Nom d'utilisateur : " username
-read -p "Adresse IP ou nom de domaine : " hostname
-
-# Assurer que la clé publique est présente sur le serveur distant
-ssh-copy-id $username@$hostname
-
-# Boucle pour la connexion SSH
-while ! connect_ssh; do
-    echo "Échec de la connexion SSH. Veuillez réessayer."
-    read -p "Nom d'utilisateur : " username
-    read -p "Adresse IP ou nom de domaine : " hostname
-done
-
-echo "Connexion établie avec succès!"
-
-# Afficher le menu principal
+# Affichage du menu principal
 while true; do
-    show_menu
+    echo "----- MENU -----"
+    echo "1. Etablir une connexion SSH"
+    echo "2. Eteindre le serveur à distance"
+    echo "3. Redémarrer le serveur à distance"
+    echo "4. Quitter le script"
 
-    read -p "Choisissez une option (1/2/3/4/5/6) : " choice
+    read -p "Choisissez une option (1-4) : " choice
     case $choice in
-        1)
-            echo "Option 1 : Éteindre le serveur"
-            shutdown_server
-            ;;
-        2)
-            echo "Option 2 : Redémarrer le serveur"
-            restart_server
-            ;;
-        3)
-            echo "Option 3 : Ajouter un utilisateur"
-            add_user
-            ;;
-        4)
-            echo "Option 4 : Supprimer un utilisateur"
-            delete_user
-            ;;
-        5)
-            echo "Option 5 : Afficher les utilisateurs"
-            echo "Liste des utilisateurs sur $hostname :"
-            show_users
-            ;;
-        6)
-            echo "Option 6 : Au revoir!"
-            break
-            ;;
-        *)
-            echo "Choix invalide. Veuillez choisir une option valide."
-            ;;
+        1) establish_ssh_connection ;;
+        2) remote_shutdown ;;
+        3) remote_restart ;;
+        4) echo "Au revoir !"; break ;;
+        *) echo "Option invalide. Veuillez entrer un nombre entre 1 et 4." ;;
     esac
 done
