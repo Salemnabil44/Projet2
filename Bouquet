@@ -51,7 +51,7 @@ shutdown_server() {
 
         # Vérifier le statut de sortie de la commande SSH
         ssh_exit_status=$?
-        if [ $ssh_exit_status -eq 0 ]; then
+        if [ $ssh_exit_status -ne 0 ]; then
             echo "Serveur éteint."
         else
             echo "Échec de l'arrêt du serveur."
