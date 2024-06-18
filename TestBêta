@@ -3,7 +3,7 @@
 # Fonction pour se connecter en SSH
 connect_ssh() {
     echo "Connexion SSH en cours..."
-    ssh $username@$hostname "echo Connexion SSH établie sur \`hostname\`"
+    ssh $username@$hostname "echo Connexion SSH établie sur \$(hostname)"
     return $?
 }
 
@@ -34,10 +34,10 @@ delete_user() {
 display_user_info() {
     echo "Affichage des informations de l'utilisateur cible sur $hostname :"
     ssh $username@$hostname "
-    echo 'Nom de l'utilisateur : $(whoami)'
-    echo 'Adresse IP : $(hostname -I | awk '{print \$1}')'
-    echo 'Disque Dur : $(df -h / | awk 'NR==2 {print \$2, \"total,\", \$3, \"utilisé,\", \$4, \"libre\"}')'
-    echo 'Mémoire Vive : $(free -h | awk 'NR==2 {print \$2, \"total,\", \$3, \"utilisé,\", \$4, \"libre\"}')'
+    echo 'Nom de l'utilisateur : ' \$(whoami)
+    echo 'Adresse IP : ' \$(hostname -I | awk '{print \$1}')
+    echo 'Disque Dur : ' \$(df -h / | awk 'NR==2 {print \$2 \" total, \" \$3 \" utilisé, \" \$4 \" libre\"}')
+    echo 'Mémoire Vive : ' \$(free -h | awk 'NR==2 {print \$2 \" total, \" \$3 \" utilisé, \" \$4 \" libre\"}')
     "
 }
 
