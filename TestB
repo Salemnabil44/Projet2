@@ -107,4 +107,37 @@ echo "Connexion établie avec succès!"
 
 # Afficher le menu principal
 while true; do
-    show
+    show_menu
+
+    read -p "Choisissez une option (1/2/3/4/5/6) : " choice
+    case $choice in
+        1)
+            echo "Option 1 : Ajouter un utilisateur"
+            add_user
+            ;;
+        2)
+            echo "Option 2 : Supprimer un utilisateur"
+            delete_user
+            ;;
+        3)
+            echo "Option 3 : Afficher les utilisateurs"
+            echo "Liste des utilisateurs sur $hostname :"
+            show_users
+            ;;
+        4)
+            echo "Option 4 : Éteindre"
+            shutdown_server
+            ;;
+        5)
+            echo "Option 5 : Redémarrer"
+            reboot_server
+            ;;
+        6)
+            echo "Option 6 : Quitter"
+            break
+            ;;
+        *)
+            echo "Choix invalide. Veuillez choisir une option valide."
+            ;;
+    esac
+done
