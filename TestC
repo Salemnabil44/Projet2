@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Récupérer le nom de l'utilisateur
+get_user_name() {
+    echo "$(whoami)"
+}
+
+# Récupérer l'adresse IP
+get_ip_address() {
+    hostname -I | awk '{print $1}'
+}
+
+# Récupérer l'architecture du processeur
+get_processor_architecture() {
+    echo "$(uname -m)"
+}
+
+# Récupérer les informations sur le disque dur
+get_disk_info() {
+    df -h --output=source,target,fstype,size,used,avail,pcent | awk 'NR==1{next} {print "Device: "$1"\nMountpoint: "$2"\nFile system type: "$3"\nTotal Size: "$4"\nUsed: "$5"\nAvailable: "$6"\nPercentage Used: "$7"\n"}'
+}
+
+# Enregistrer les informations dans un fichier et afficher sur le terminal
+save_info_to_file_and_display() {
+    local target="$1"
+    local date="$(date +'%Y%m%d')"
+    local filename="info_${target}_${date}.txt"
+    local documents_dir="$HOME/Documents"
+    local desktop_dir="$HOME/Desktop"
+
+    if [ -d "$documents_dir" ]; then
+        echo "Enregistrement des informations dans $documents_dir/$filename"
+        {
+            echo "Nom de l'utilisateur: $(get_user_name)"
+            echo "Adresse IP: $(get_ip_address)"
+            echo "Architecture du processeur: $(get_processor_architecture)"
+            echo -e "\nInformations sur le disque dur:"
+            get_disk_info
+        } > "$documents_dir/$filename"
+    elif [ -d "$desktop_dir" ]; then
+        echo "Enregistrement des informations sur le bureau dans $desktop_dir/$filename"
+        {
+            echo "Nom de l'utilisateur: $(get_user_name)"
+            echo "Adresse IP: $(get_ip_address)"
+            echo "Architecture du processeur: $(get_processor_architecture)"
+            echo -e "\nInformations sur le disque dur:"
+            get_disk_info
+        } > "$desktop_dir/$filename"
+    else
+        echo "Impossible de trouver le dossier Documents ou le bureau pour enregistrer le fichier."
+        exit 1
+    fi
+
+    echo -e "\nLes informations ont été enregistrées avec succès et sont affichées ci-dessous :"
+    {
+        echo "Nom de l'utilisateur: $(get_user_name)"
+        echo "Adresse IP: $(get_ip_address)"
+        echo "Architecture du processeur: $(get_processor_architecture)"
+        echo -e "\nInformations sur le disque dur:"
+        get_disk_info
+    }
+}
+
+# Appeler la fonction pour enregistrer les informations et les afficher
+save_info_to_file_and_display "$(get_user_name)"
