@@ -90,6 +90,15 @@ show_system_info() {
     # Définir le nom du fichier avec la date du jour dans le dossier Documents    
     output_file="$documents_dir/system_info_$current_date.txt"
 
+# Nouvelle fonction pour afficher les informations système
+show_system_info() {
+    # Obtenir la date du jour au format YYYY-MM-DD
+    current_date=$(date +%F)
+    # Définir le chemin du dossier Documents de l'utilisateur actuel
+    documents_dir="$HOME/Documents"
+    # Définir le nom du fichier avec la date du jour dans le dossier Documents
+    output_file="$documents_dir/system_info_$current_date.txt"
+
     # Afficher les informations système et les enregistrer dans le fichier
     {
         echo "Informations système sur $hostname :"
@@ -112,6 +121,10 @@ EOF
     } > "$output_file"
 }
 
+# Exemple d'utilisation de la fonction
+username="votre_nom_utilisateur"
+hostname="votre_hote"
+show_system_info
 
 # Fonction pour afficher le menu
 show_menu() {
