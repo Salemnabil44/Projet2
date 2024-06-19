@@ -111,7 +111,7 @@ show_menu() {
     echo "3. Afficher les utilisateurs"
     echo "4. Éteindre le serveur"
     echo "5. Redémarrer le serveur"
-    echo "6. Quitter"
+    echo "6. Afficher les informations système"
     echo "7. Quitter"
 }
 
