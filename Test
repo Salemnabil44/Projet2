@@ -81,33 +81,35 @@ reboot_server() {
     fi
 }
 
-# Nouvelle fonction pour afficher et enregistrer les informations système
+# Nouvelle fonction pour afficher les informations système
 show_system_info() {
-    local date_str=$(date +%Y%m%d)
-    local target_info=$(ssh $username@$hostname "hostname")
-    local file_path="$HOME/Documents/info_${target_info}_${date_str}.txt"
+    # Obtenir la date du jour au format YYYY-MM-DD
+    current_date=$(date +%F)
+    # Définir le chemin du dossier Documents de l'utilisateur actuel documents_dir=« $HOME/.       Documents" 
+   # Définir le nom du fichier avec la date du jour dans le dossier Documents    output_file="$documents_dir/system_info_$current_date.txt"
 
-    echo "Collecte des informations système sur $hostname et enregistrement dans $file_path"
-
-    ssh $username@$hostname <<EOF > $file_path
-        echo "Utilisateurs :"
-        awk -F: '\$3 >= 1000 && \$1 != "nobody" {print \$1}' /etc/passwd
-        echo ""
-        echo "Disque dur :"
-        df -h
-        echo ""
-        echo "Architecture du processeur :"
-        uname -m
-        echo ""
-        echo "Mémoire vive :"
-        free -h
-        echo ""
-        echo "Adresse IP :"
-        hostname -I
+    # Afficher les informations système et les enregistrer dans le fichier
+    {
+        echo "Informations système sur $hostname :"
+        ssh $username@$hostname <<EOF
+            echo "Utilisateurs :"
+            awk -F: '\$3 >= 1000 && \$1 != "nobody" {print \$1}' /etc/passwd
+            echo ""
+            echo "Disque dur :"
+            df -h
+            echo ""
+            echo "Architecture du processeur :"
+            uname -m
+            echo ""
+            echo "Mémoire vive :"
+            free -h
+            echo ""
+            echo "Adresse IP :"
+            hostname -I
 EOF
-
-    echo "Informations système enregistrées dans $file_path"
+    } > "$output_file"
 }
+
 
 # Fonction pour afficher le menu
 show_menu() {
