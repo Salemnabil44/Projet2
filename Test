@@ -81,16 +81,20 @@ reboot_server() {
     fi
 }
 
-# Nouvelle fonction pour afficher les informations système
-show_system_info() {
-    # Obtenir la date du jour au format YYYY-MM-DD
-    current_date=$(date +%F)
-    # Définir le chemin du dossier Documents de l'utilisateur actuel 
-    documents_dir=« $HOME/.       Documents" 
-    # Définir le nom du fichier avec la date du jour dans le dossier Documents    
-    output_file="$documents_dir/system_info_$current_date.txt"
+# Fonction pour afficher le menu
+show_menu() {
+    echo ""
+    echo "Menu :"
+    echo "1. Ajouter un utilisateur"
+    echo "2. Supprimer un utilisateur"
+    echo "3. Afficher les utilisateurs"
+    echo "4. Éteindre le serveur"
+    echo "5. Redémarrer le serveur"
+    echo "6. Afficher les informations système"
+    echo "7. Quitter"
+}
 
-# Nouvelle fonction pour afficher les informations système
+# Fonction pour afficher les informations système via SSH
 show_system_info() {
     # Obtenir la date du jour au format YYYY-MM-DD
     current_date=$(date +%F)
@@ -121,24 +125,6 @@ EOF
     } > "$output_file"
 }
 
-# Exemple d'utilisation de la fonction
-username="votre_nom_utilisateur"
-hostname="votre_hote"
-show_system_info
-
-# Fonction pour afficher le menu
-show_menu() {
-    echo ""
-    echo "Menu :"
-    echo "1. Ajouter un utilisateur"
-    echo "2. Supprimer un utilisateur"
-    echo "3. Afficher les utilisateurs"
-    echo "4. Éteindre le serveur"
-    echo "5. Redémarrer le serveur"
-    echo "6. Afficher et enregistrer les informations système"
-    echo "7. Quitter"
-}
-
 # Demander les identifiants SSH
 echo "Entrez les informations de connexion SSH :"
 read -p "Nom d'utilisateur : " username
@@ -157,7 +143,7 @@ echo "Connexion établie avec succès!"
 while true; do
     show_menu
 
-    read -p "Choisissez une option (1/2/3/4/5/6/7): " choice
+    read -p "Choisissez une option (1/2/3/4/5/6/7) : " choice
     case $choice in
         1)
             echo "Option 1 : Ajouter un utilisateur"
@@ -181,8 +167,9 @@ while true; do
             reboot_server
             ;;
         6)
-            echo "Option 6 : Afficher et enregistrer les informations système"
+            echo "Option 6 : Afficher les informations système"
             show_system_info
+            echo "Les informations système ont été enregistrées dans $output_file"
             ;;
         7)
             echo "Option 7 : Au revoir!"
