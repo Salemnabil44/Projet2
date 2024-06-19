@@ -1,1 +1,3 @@
+./test.sh: line 76: syntax error near unexpected token `else'
+./test.sh: line 76: `        else'
 
