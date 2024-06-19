@@ -123,6 +123,7 @@ show_system_info() {
             hostname -I
 EOF
     } > "$output_file"
+        echo "$output_file"
 }
 
 # Demander les identifiants SSH
