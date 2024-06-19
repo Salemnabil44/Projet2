@@ -83,23 +83,31 @@ reboot_server() {
 
 # Nouvelle fonction pour afficher les informations système
 show_system_info() {
-    echo "Informations système sur $hostname :"
-    ssh $username@$hostname <<EOF
+    # Obtenir la date du jour au format YYYY-MM-DD
+    current_date=$(date +%F)
+    # Définir le chemin du dossier Documents de l'utilisateur actuel
+    documents_dir="$HOME/Documents"
+    # Définir le nom du fichier avec la date du jour dans le dossier Documents
+    output_file="$documents_dir/system_info_$current_date.txt"
+
+    # Afficher les informations système sur le terminal et les enregistrer dans le fichier
+    {
+        echo "Informations système sur $hostname :"
         echo "Utilisateurs :"
-        awk -F: '\$3 >= 1000 && \$1 != "nobody" {print \$1}' /etc/passwd
+        ssh $username@$hostname awk -F: '\$3 >= 1000 && \$1 != "nobody" {print \$1}' /etc/passwd
         echo ""
         echo "Disque dur :"
-        df -h
+        ssh $username@$hostname df -h
         echo ""
         echo "Architecture du processeur :"
-        uname -m
+        ssh $username@$hostname uname -m
         echo ""
         echo "Mémoire vive :"
-        free -h
+        ssh $username@$hostname free -h
         echo ""
         echo "Adresse IP :"
-        hostname -I
-EOF
+        ssh $username@$hostname hostname -I
+    } | tee "$output_file"
 }
 
 # Fonction pour afficher le menu
