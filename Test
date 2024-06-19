@@ -144,7 +144,7 @@ echo "Connexion établie avec succès!"
 while true; do
     show_menu
 
-    read -p "Choisissez une option (1/2/3/4/5/6) : " choice
+    read -p "Choisissez une option (1/2/3/4/5/6/7) : " choice
     case $choice in
         1)
             echo "Option 1 : Ajouter un utilisateur"
