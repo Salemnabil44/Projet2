@@ -48,10 +48,8 @@ shutdown_server() {
         echo ""
         echo "Extinction du serveur..."
         ssh $username@$hostname "echo '$password' | sudo -S shutdown now"
-
-        # Vérifier le statut de sortie de la commande SSH
         ssh_exit_status=$?
-        if [ $ssh_exit_status -ne 0 ]; then
+        if [ $ssh_exit_status -eq 0 ]; then
             echo "Serveur éteint."
         else
             echo "Échec de l'arrêt du serveur."
@@ -70,8 +68,7 @@ reboot_server() {
         echo "Redémarrage du serveur..."
         ssh $username@$hostname "echo '$password' | sudo -S reboot"
         ssh_exit_status=$?
-        
-        if [ $ssh_exit_status -eq 0 ]; alors
+        if [ $ssh_exit_status -eq 0 ]; then
             echo "Le serveur est en cours de redémarrage."
         else
             echo "Commande de redémarrage envoyée. La connexion SSH a été interrompue, le serveur est en cours de redémarrage."
