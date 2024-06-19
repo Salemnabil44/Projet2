@@ -1,6 +1,1 @@
-Choisissez une option (1/2/3/4/5) : 4
-Option 4 : Afficher les informations de l'utilisateur cible
-Affichage des informations de l'utilisateur cible sur 192.168.65.6 :
-nabil@192.168.65.6's password: 
-bash: -c: ligne 5: fin de fichier (EOF) prématurée lors de la recherche du « ' » correspondant
-bash: -c: ligne 7: erreur de syntaxe : fin de fichier prématurée
+
