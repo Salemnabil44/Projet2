@@ -15,34 +15,6 @@ Ce projet consiste à développer des scripts permettant d'exécuter des tâches
 
 ## Configuration des Machines
 
-### Serveurs
-
-**Serveur Windows Server 2022**
-- Nom : SRVWIN01
-- Compte : Administrator
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.5/24
-
-**Serveur Debian 12**
-- Nom : SRVLX01
-- Compte : root
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.10/24
-
-### Clients
-
-**Client Windows 10**
-- Nom : CLIWIN01
-- Compte utilisateur : wilder (admin local)
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.20/24
-
-**Client Ubuntu 22.04 LTS**
-- Nom : CLILIN01
-- Compte utilisateur : wilder (sudo)
-- Mot de passe : Azerty1*
-- IP fixe : 172.16.10.30/24
-
 ## Fonctionnalités des Scripts
 
 **Script PowerShell (.ps1)**  
@@ -72,14 +44,10 @@ Les événements sont enregistrés dans des fichiers de log :
 - Difficultés et solutions
 - Améliorations possibles
 
-### Documentation Administrateur
+### Documentation Administrateur et Utilisateur
 - Prérequis techniques
 - Instructions d'installation et de configuration
 - FAQ pour les problèmes courants
-
-### Documentation Utilisateur
-- Utilisation de base et avancée des scripts
-- FAQ pour les problèmes d'utilisation courants
 
 ## Conclusion
 
