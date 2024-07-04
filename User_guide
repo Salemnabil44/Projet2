@@ -33,6 +33,7 @@ Exécutez le script avec la commande : ./script.sh
 Nom d'utilisateur : [votre_nom_d’utilisateur]
 Adresse IP ou nom de domaine : [adresse_ip_ou_nom_de_domaine_du_serveur]
 Connexion SSH : Le script tentera de se connecter au serveur distant. Le mot de passe de l’utilisateur cible vous sera demandé. En cas d'échec, il vous sera demandé de ressaisir les identifiants.
+
 ### 4. Menu Principal
 Une fois connecté, le menu principal s’affiche :
 
