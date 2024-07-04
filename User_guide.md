@@ -34,6 +34,8 @@ Nom d'utilisateur : [votre_nom_d’utilisateur]
 Adresse IP ou nom de domaine : [adresse_ip_ou_nom_de_domaine_du_serveur]
 Connexion SSH : Le script tentera de se connecter au serveur distant. Le mot de passe de l’utilisateur cible vous sera demandé. En cas d'échec, il vous sera demandé de ressaisir les identifiants.
 
+<img width="511" alt="Capture d’écran 2024-07-03 à 15 48 50" src="https://github.com/Salemnabil44/Projet2/assets/161028838/950cc90e-90f0-4438-a18a-8be9e6f5d6b6">
+
 ### 4. Menu Principal
 Une fois connecté, le menu principal s’affiche :
 
