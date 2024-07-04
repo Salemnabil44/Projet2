@@ -13,8 +13,6 @@ Ce projet consiste à développer des scripts permettant d'exécuter des tâches
 ### Objectifs secondaires
 - Cibler une machine cliente avec un type d'OS différent depuis un serveur.
 
-## Configuration des Machines
-
 ## Fonctionnalités des Scripts
 
 **Script PowerShell (.ps1)**  
